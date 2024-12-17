@@ -19,4 +19,4 @@ This application has been modularized thinking about:
 
 # App screenshots
 
-![image](https://github.com/user-attachments/assets/c4cb0fef-84b1-4ace-9119-4c62168f1671) ![image](https://github.com/user-attachments/assets/89d4fd72-c596-4b49-a31d-e4e16125b5f8)
+![image](https://github.com/user-attachments/assets/930c4585-1038-418d-87c8-6e05ccfe9451)   ![image](https://github.com/user-attachments/assets/89d4fd72-c596-4b49-a31d-e4e16125b5f8)
