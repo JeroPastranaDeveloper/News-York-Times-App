@@ -2,7 +2,7 @@
 www.linkedin.com/in/jero-pastrana<br>
 https://github.com/JeroPastranaDeveloper
 
-This New York Times app demonstrates modern Android development with Jetpack Compose, KOIN, Coroutines, Flow, ROOM, and Material Design Material Design based on a hybrid architecture between MVI and MVVM.
+This New York Times app demonstrates modern Android development with Jetpack Compose, KOIN, Coroutines, Flow, ROOM, and Material Design Material based on a hybrid architecture between MVI and MVVM.
 
 For the application to load news, you need an API Key from the New York Times website (https://developer.nytimes.com), the API Key obtained has to be in the local.properties file.
 Example:<br>
