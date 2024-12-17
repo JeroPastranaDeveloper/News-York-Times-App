@@ -6,9 +6,7 @@ This New York Times app demonstrates modern Android development with Jetpack Com
 
 For the application to load news, you need an API Key from the New York Times website (https://developer.nytimes.com), the API Key obtained has to be in the local.properties file.
 
-![image](https://github.com/user-attachments/assets/c4cb0fef-84b1-4ace-9119-4c62168f1671)
-
-![image](https://github.com/user-attachments/assets/89d4fd72-c596-4b49-a31d-e4e16125b5f8)
+![image](https://github.com/user-attachments/assets/c4cb0fef-84b1-4ace-9119-4c62168f1671) ![image](https://github.com/user-attachments/assets/89d4fd72-c596-4b49-a31d-e4e16125b5f8)
 
 This application has been modularized thinking about:
 - Resource optimization. 
