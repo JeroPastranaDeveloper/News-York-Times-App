@@ -1,4 +1,7 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -19,7 +22,20 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "News Api"
+rootProject.name = "news-api"
 include(":app")
+
 include(":core")
 include(":core:designsystem")
+include(":core:data")
+include(":core:navigation")
+include(":core:model")
+
+include(":feature")
+include(":feature:home")
+include(":feature:details")
+include(":core:network")
+include(":core:database")
+include(":core:viewmodel")
+include(":utils")
+include(":core:domain")
