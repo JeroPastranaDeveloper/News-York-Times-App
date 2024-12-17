@@ -1,6 +1,6 @@
-Developed by Jero Pastrana
-www.linkedin.com/in/jero-pastrana
-https://github.com/JeroPastranaDeveloper
+Developed by Jero Pastrana<br>
+www.linkedin.com/in/jero-pastrana<br>
+https://github.com/JeroPastranaDeveloper<br>
 
 This New York Times app demonstrates modern Android development with Jetpack Compose, KOIN, Coroutines, Flow, ROOM, and Material Design Material Design based on a hybrid architecture between MVI and MVVM.
 
