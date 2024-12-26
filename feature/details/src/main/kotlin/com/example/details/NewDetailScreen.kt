@@ -59,6 +59,7 @@ fun SharedTransitionScope.NewDetailScreen(
     viewModel: NewDetailViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState(UiState())
+
     Box {
         Column(
             modifier = Modifier
