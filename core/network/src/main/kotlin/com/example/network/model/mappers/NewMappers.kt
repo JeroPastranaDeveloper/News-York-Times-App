@@ -42,7 +42,10 @@ fun ApiNewDetail.toNewDetail(imageUrl: String): NewDetail =
     )
 
 fun ApiNewDetail.buildAuthor(): String =
-    "${this.byline?.person?.get(0)?.firstName.orEmpty()} ${this.byline?.person?.get(0)?.lastName.orEmpty()}"
+    this.byline?.person
+        ?.takeIf { it.isNotEmpty() }
+        ?.let { "${it[0].firstName.orEmpty()} ${it[0].lastName.orEmpty()}" }
+        .orEmpty()
 
 fun List<ApiMedia>.toMedia(): List<ArticleMedia> =
     this.map {

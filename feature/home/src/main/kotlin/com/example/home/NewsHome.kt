@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -34,9 +35,11 @@ import com.example.designsystem.components.NewsAppBar
 import com.example.core.designsystem.R
 import com.example.designsystem.theme.NewsTheme
 import com.example.home.HomeViewContract.UiState
+import com.example.home.HomeViewContract.UiIntent
 import com.example.home.composables.NewCard
 import com.example.model.ALL_NEWS
 import com.example.model.FAVORITE_NEWS
+import com.example.model.New
 import com.example.navigation.NewsScreen
 import com.example.navigation.currentComposeNavigator
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -47,7 +50,6 @@ fun SharedTransitionScope.NewsHome(
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: HomeViewModel = koinViewModel()
 ) {
-
     SetStatusBarIconsColor()
 
     val state by viewModel.state.collectAsState(UiState())
@@ -58,7 +60,7 @@ fun SharedTransitionScope.NewsHome(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 if (state.screen == FAVORITE_NEWS) {
-                    viewModel.sendIntent(HomeViewContract.UiIntent.ChangeScreen(FAVORITE_NEWS))
+                    viewModel.sendIntent(UiIntent.ChangeScreen(FAVORITE_NEWS))
                 }
             }
         }
@@ -76,43 +78,94 @@ fun SharedTransitionScope.NewsHome(
             NewsBottomBar(
                 onAllNewsClick = {
                     viewModel.sendIntent(
-                        HomeViewContract.UiIntent.ChangeScreen(ALL_NEWS)
+                        UiIntent.ChangeScreen(ALL_NEWS)
                     )
                 },
                 onFavoriteNewsClick = {
                     viewModel.sendIntent(
-                        HomeViewContract.UiIntent.ChangeScreen(FAVORITE_NEWS)
+                        UiIntent.ChangeScreen(FAVORITE_NEWS)
                     )
                 }
             )
         }
     ) { paddingValues ->
-        if (!state.isLoading) {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                columns = StaggeredGridCells.Fixed(2),
-                verticalItemSpacing = 4.dp,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                content = {
-                    items(state.news.size) { index ->
-                        NewCard(animatedVisibilityScope, state.news[index]) {
-                            composeNavigator.navigate(NewsScreen.Details(state.news[index]))
+        when (state.screen) {
+            ALL_NEWS -> {
+                if (state.isLoading) {
+                    LoadingIndicator()
+                } else {
+                    NewsGrid(
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        news = state.news,
+                        paddingValues = paddingValues,
+                        onCardClick = { newsItem ->
+                            composeNavigator.navigate(NewsScreen.Details(newsItem))
                         }
-                    }
+                    )
                 }
-            )
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = NewsTheme.colors.black
-                )
+            }
+
+            else -> {
+                if (state.news.isEmpty()) {
+                    EmptyStateMessage(message = stringResource(R.string.empty_favorites))
+                } else {
+                    NewsGrid(
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        news = state.news,
+                        paddingValues = paddingValues,
+                        onCardClick = { newsItem ->
+                            composeNavigator.navigate(NewsScreen.Details(newsItem))
+                        }
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun SharedTransitionScope.NewsGrid(
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    news: List<New>,
+    paddingValues: PaddingValues,
+    onCardClick: (New) -> Unit
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        columns = StaggeredGridCells.Fixed(2),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        content = {
+            items(news.size) { index ->
+                NewCard(animatedVisibilityScope, news[index]) {
+                    onCardClick(news[index])
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun LoadingIndicator() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = NewsTheme.colors.black
+        )
+    }
+}
+
+@Composable
+fun EmptyStateMessage(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = message)
     }
 }
 

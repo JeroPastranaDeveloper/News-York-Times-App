@@ -34,7 +34,7 @@ class HomeViewModel(
                 setState {
                     UiState(
                         screen = ALL_NEWS,
-                        news = news,
+                        news = news.fixNoImage(),
                         isLoading = false
                     )
                 }

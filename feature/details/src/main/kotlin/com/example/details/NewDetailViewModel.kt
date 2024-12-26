@@ -26,47 +26,45 @@ class NewDetailViewModel(
     override val initialViewState = UiState()
     override suspend fun manageIntent(intent: UiIntent) {
         when (intent) {
-            UiIntent.OnFavoritePressed -> onFavoritePressed()
+            UiIntent.OnFavoritePressed -> handleFavoriteAction()
         }
     }
 
     private val newFlow: StateFlow<New?> = savedStateHandle.getStateFlow("new", null)
 
     init {
-        observeNewDetail()
+        observeNewDetails()
     }
 
-    private fun observeNewDetail() {
-        newFlow.filterNotNull()
-            .flatMapLatest {
-                detailRepository.fetchNewsList(it.articleUrl, it.imageUrl)
-            }.onEach { newDetail ->
-                setState {
-                    copy(new = newDetail)
-                }
-            }.launchIn(viewModelScope)
+    private fun observeNewDetails() {
+        newFlow
+            .filterNotNull()
+            .flatMapLatest { detailRepository.fetchNewsList(it.articleUrl, it.imageUrl) }
+            .onEach { newDetail ->
+                setState { copy(new = newDetail) }
+            }
+            .launchIn(viewModelScope)
     }
 
-    private fun onFavoritePressed() {
-        if (state.value.new.isFavorite) deleteFavorite()
-        else saveNewAsFavorite()
-    }
-
-    private fun saveNewAsFavorite() {
-        viewModelScope.launch {
-            val title = newFlow.value?.title.orEmpty()
-            val articleUrl = newFlow.value?.articleUrl.orEmpty()
-            saveNewRepository.saveNew(state.value.new.copy(title = title, webUrl = articleUrl))
-            setState {
-                copy(new = state.value.new.copy(isFavorite = true))
+    private fun handleFavoriteAction() {
+        val currentNew = state.value.new
+        if (currentNew.isFavorite) {
+            updateFavoriteStatus(false) { deleteFavoriteNew.deleteFavoriteNew(currentNew.webUrl) }
+        } else {
+            updateFavoriteStatus(true) {
+                val title = newFlow.value?.title.orEmpty()
+                val articleUrl = newFlow.value?.articleUrl.orEmpty()
+                saveNewRepository.saveNew(currentNew.copy(title = title, webUrl = articleUrl))
             }
         }
     }
 
-    private fun deleteFavorite() {
+    private fun updateFavoriteStatus(isFavorite: Boolean, action: suspend () -> Unit) {
         viewModelScope.launch {
-            deleteFavoriteNew.deleteFavoriteNew(state.value.new.webUrl)
-            setState { copy(new = state.value.new.copy(isFavorite = false)) }
+            action()
+            setState {
+                copy(new = state.value.new.copy(isFavorite = isFavorite))
+            }
         }
     }
 }
