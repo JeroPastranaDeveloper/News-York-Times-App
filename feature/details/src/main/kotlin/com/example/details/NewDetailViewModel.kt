@@ -10,6 +10,7 @@ import com.example.domain.repository.roomdatabase.SaveNewRepository
 import com.example.model.New
 import com.example.viewmodel.BaseViewModel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +40,7 @@ class NewDetailViewModel(
     private fun observeNewDetails() {
         newFlow
             .filterNotNull()
+            .filter { it.articleUrl.isNotEmpty() }
             .flatMapLatest { detailRepository.fetchNewDetail(it.articleUrl, it.imageUrl) }
             .onEach { newDetail ->
                 setState { copy(new = newDetail) }
@@ -52,9 +54,7 @@ class NewDetailViewModel(
             updateFavoriteStatus(false) { deleteFavoriteNew.deleteFavoriteNew(currentNew.webUrl) }
         } else {
             updateFavoriteStatus(true) {
-                val title = newFlow.value?.title.orEmpty()
-                val articleUrl = newFlow.value?.articleUrl.orEmpty()
-                saveNewRepository.saveNew(currentNew.copy(title = title, webUrl = articleUrl))
+                saveNewRepository.saveNew(currentNew)
             }
         }
     }
