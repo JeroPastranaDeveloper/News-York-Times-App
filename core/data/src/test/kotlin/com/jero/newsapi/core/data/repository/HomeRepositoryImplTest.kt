@@ -1,11 +1,11 @@
-package com.jero.newsapi.core.data
+package com.jero.newsapi.core.data.repository
 
 import app.cash.turbine.test
 import com.example.data.repository.home.HomeRepositoryImpl
 import com.example.network.service.NewClient
 import com.example.network.service.NewService
 import com.example.test.MainCoroutinesRule
-import com.jero.newsapi.core.data.mother.NewMother
+import com.jero.newsapi.core.data.mother.ApiNewMother
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.retrofit.responseOf
 import kotlinx.coroutines.test.runTest
@@ -38,7 +38,7 @@ class HomeRepositoryImplTest {
 
     @Test
     fun `GIVEN a news list THEN emit that list of news`() = runTest {
-        val mockData = NewMother.buildApiNewResponse()
+        val mockData = ApiNewMother.buildApiNewResponse()
 
         whenever(service.fetchNewList()).thenReturn(
             ApiResponse.responseOf {
@@ -67,7 +67,7 @@ class HomeRepositoryImplTest {
 
     @Test
     fun `GIVEN an empty news list THEN the count of news is 0`() = runTest {
-        val emptyMockData = NewMother.buildApiNewResponse(articles = emptyList())
+        val emptyMockData = ApiNewMother.buildApiNewResponse(articles = emptyList())
 
         whenever(service.fetchNewList()).thenReturn(
             ApiResponse.responseOf { Response.success(emptyMockData) }

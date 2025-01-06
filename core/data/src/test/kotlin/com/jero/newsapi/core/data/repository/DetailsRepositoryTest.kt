@@ -1,4 +1,4 @@
-package com.jero.newsapi.core.data
+package com.jero.newsapi.core.data.repository
 
 import app.cash.turbine.test
 import com.example.data.repository.details.DetailsRepositoryImpl
@@ -8,7 +8,7 @@ import com.example.network.service.NewClient
 import com.example.network.service.NewService
 import com.example.test.MainCoroutinesRule
 import com.jero.newsapi.core.data.mother.NewDaoMother
-import com.jero.newsapi.core.data.mother.NewMother
+import com.jero.newsapi.core.data.mother.ApiNewMother
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.retrofit.responseOf
 import kotlinx.coroutines.test.runTest
@@ -43,7 +43,7 @@ class DetailsRepositoryTest {
     fun `GIVEN a not favorite new THEN that new is not favorite`() = runTest {
         val mockUrl = "https://example.com/article"
         val mockImageUrl = "https://example.com/image.jpg"
-        val mockApiNewDetail = NewMother.buildApiNewDetailResponse()
+        val mockApiNewDetail = ApiNewMother.buildApiNewDetailResponse()
         val expectedNewDetail = mockApiNewDetail.response?.docs?.firstOrNull()?.toNewDetail(mockImageUrl)
 
         val fq = "web_url:(\"$mockUrl\")"
@@ -67,7 +67,7 @@ class DetailsRepositoryTest {
     fun `GIVEN a favorite new THEN that new is favorite`() = runTest {
         val mockUrl = "https://example.com/article"
         val mockImageUrl = "https://example.com/image.jpg"
-        val mockApiNewDetail = NewMother.buildApiNewDetailResponse()
+        val mockApiNewDetail = ApiNewMother.buildApiNewDetailResponse()
         val expectedNewDetail = mockApiNewDetail.response?.docs?.firstOrNull()?.toNewDetail(mockImageUrl)?.copy(isFavorite = true)
 
         val fq = "web_url:(\"$mockUrl\")"

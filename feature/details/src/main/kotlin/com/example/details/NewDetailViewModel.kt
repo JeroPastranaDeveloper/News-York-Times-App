@@ -8,7 +8,7 @@ import com.example.domain.repository.details.DetailsRepository
 import com.example.domain.repository.roomdatabase.DeleteFavoriteNew
 import com.example.domain.repository.roomdatabase.SaveNewRepository
 import com.example.model.New
-import com.example.viewmodel.BaseViewModelWithIntent
+import com.example.viewmodel.BaseViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -21,7 +21,7 @@ class NewDetailViewModel(
     private val saveNewRepository: SaveNewRepository,
     private val deleteFavoriteNew: DeleteFavoriteNew,
     savedStateHandle: SavedStateHandle
-) : BaseViewModelWithIntent<UiState, UiIntent>() {
+) : BaseViewModel<UiState, UiIntent>() {
 
     override val initialViewState = UiState()
     override suspend fun manageIntent(intent: UiIntent) {

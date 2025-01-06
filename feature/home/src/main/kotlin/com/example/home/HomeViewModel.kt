@@ -7,13 +7,13 @@ import com.example.home.HomeViewContract.UiIntent
 import com.example.home.HomeViewContract.UiState
 import com.example.model.ALL_NEWS
 import com.example.model.FAVORITE_NEWS
-import com.example.viewmodel.BaseViewModelWithIntent
+import com.example.viewmodel.BaseViewModel
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val newsRepository: HomeRepository,
     private val getNewsRepository: GetNewsRepository,
-) : BaseViewModelWithIntent<UiState, UiIntent>() {
+) : BaseViewModel<UiState, UiIntent>() {
 
     override val initialViewState = UiState()
 
