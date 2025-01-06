@@ -17,7 +17,7 @@ class DetailsRepositoryImpl(
 ) : DetailsRepository {
 
     @WorkerThread
-    override fun fetchNewsList(url: String, imageUrl: String): Flow<NewDetail> = flow {
+    override fun fetchNewDetail(url: String, imageUrl: String): Flow<NewDetail> = flow {
         retryWithDelay {
             newClient.fetchNewDetail(url).suspendOnSuccess {
                 val newDetail = data.response?.docs?.firstOrNull()?.toNewDetail(imageUrl)

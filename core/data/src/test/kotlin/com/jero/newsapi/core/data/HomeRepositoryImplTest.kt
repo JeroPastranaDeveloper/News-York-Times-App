@@ -37,7 +37,7 @@ class HomeRepositoryImplTest {
     }
 
     @Test
-    fun fetchNewListFromNetworkTest() = runTest {
+    fun `GIVEN a news list THEN emit that list of news`() = runTest {
         val mockData = NewMother.buildApiNewResponse()
 
         whenever(service.fetchNewList()).thenReturn(
@@ -66,7 +66,7 @@ class HomeRepositoryImplTest {
     }
 
     @Test
-    fun fetchNewsListWithEmptyResponseTest() = runTest {
+    fun `GIVEN an empty news list THEN the count of news is 0`() = runTest {
         val emptyMockData = NewMother.buildApiNewResponse(articles = emptyList())
 
         whenever(service.fetchNewList()).thenReturn(
@@ -84,13 +84,12 @@ class HomeRepositoryImplTest {
     }
 
     @Test
-    fun fetchNewsListWithErrorTest() = runTest {
+    fun `GIVEN an API error THEN emit an error`() = runTest {
         whenever(service.fetchNewList()).thenReturn(
             ApiResponse.responseOf { Response.error(500, "Internal Server Error".toResponseBody()) }
         )
 
         repository.fetchNewsList().test {
-            // Verifica que no se emiten elementos
             awaitComplete()
         }
 

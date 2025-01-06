@@ -4,5 +4,5 @@ import com.example.model.NewDetail
 import kotlinx.coroutines.flow.Flow
 
 interface DetailsRepository {
-    fun fetchNewsList(url: String, imageUrl: String): Flow<NewDetail>
+    fun fetchNewDetail(url: String, imageUrl: String): Flow<NewDetail>
 }

@@ -60,7 +60,7 @@ object NewMother {
         )
     )
 
-    val buildApiNewDetailResponse = ApiNewDetailResponse(
+    fun buildApiNewDetailResponse(): ApiNewDetailResponse = ApiNewDetailResponse(
         response = ApiDocs(
             docs = listOf(
                 ApiNewDetail(

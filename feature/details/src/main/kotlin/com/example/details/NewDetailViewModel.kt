@@ -39,7 +39,7 @@ class NewDetailViewModel(
     private fun observeNewDetails() {
         newFlow
             .filterNotNull()
-            .flatMapLatest { detailRepository.fetchNewsList(it.articleUrl, it.imageUrl) }
+            .flatMapLatest { detailRepository.fetchNewDetail(it.articleUrl, it.imageUrl) }
             .onEach { newDetail ->
                 setState { copy(new = newDetail) }
             }
