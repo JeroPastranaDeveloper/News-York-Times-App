@@ -1,5 +1,5 @@
 plugins {
-    id("jero.newsapi.android.application")
+    id("jero.newsapi.android.library")
 }
 
 android {
