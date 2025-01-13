@@ -29,7 +29,7 @@ class NewDetailViewModel(
         when (intent) {
             UiIntent.OnFavoritePressed -> handleFavoriteAction()
             UiIntent.OnSharePressed -> setState{ copy(showShareDialog = true) }
-            UiIntent.CloseShareDialog -> setState { copy(showShareDialog = false) }
+            UiIntent.CloseShareDialog -> setState { copy(showShareDialog = false, showQrShareDialog = false) }
             UiIntent.OnQrSharePressed -> setState { copy(showQrShareDialog = true) }
         }
     }
