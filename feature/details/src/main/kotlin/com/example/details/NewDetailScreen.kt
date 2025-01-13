@@ -1,5 +1,11 @@
 package com.example.details
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
@@ -21,6 +27,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,19 +38,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.components.newSharedElement
-import com.example.designsystem.theme.NewsTheme
 import com.example.details.NewDetailViewContract.UiIntent
 import com.example.details.NewDetailViewContract.UiState
+import com.example.details.composables.QrDialog
 import com.example.model.NewDetail
 import com.example.navigation.boundsTransform
 import com.example.navigation.currentComposeNavigator
 import com.example.utils.formatToDatePattern
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
 import com.kmpalette.palette.graphics.Palette
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
@@ -60,13 +71,19 @@ fun SharedTransitionScope.NewDetailScreen(
 ) {
     val state by viewModel.state.collectAsState(UiState())
 
+    val context = LocalContext.current
+
     Box {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            DetailsHeader(animatedVisibilityScope, state.new)
+            DetailsHeader(
+                animatedVisibilityScope,
+                state.new,
+                onShareClick = { viewModel.sendIntent(UiIntent.OnSharePressed) },
+                onQrShareClick = { viewModel.sendIntent(UiIntent.OnQrSharePressed) })
         }
 
         FloatingActionButton(
@@ -83,24 +100,51 @@ fun SharedTransitionScope.NewDetailScreen(
                 contentDescription = "Add"
             )
         }
+
+        if (state.showQrShareDialog) {
+            val qrBitmap = createQRBitmap(state.new.webUrl)
+            QrDialog(qr = qrBitmap) {
+                viewModel.sendIntent(UiIntent.CloseShareDialog)
+            }
+        }
+
+        if (state.showShareDialog) {
+            LaunchedEffect(Unit) {
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        context.getString(RR.string.share_article_message, state.new.webUrl)
+                    )
+                    type = "text/plain"
+                }
+                context.startActivity(
+                    Intent.createChooser(shareIntent, "share new")
+                )
+
+                viewModel.sendIntent(UiIntent.CloseShareDialog)
+            }
+        }
     }
 }
 
 @Composable
 private fun SharedTransitionScope.DetailsHeader(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    new: NewDetail
+    new: NewDetail,
+    onShareClick: () -> Unit = {},
+    onQrShareClick: () -> Unit = {}
 ) {
     val composeNavigator = currentComposeNavigator
     var palette by remember { mutableStateOf<Palette?>(null) }
     val shape = RoundedCornerShape(
         topStart = 0.dp,
         topEnd = 0.dp,
-        bottomStart = 64.dp,
-        bottomEnd = 64.dp,
+        bottomStart = 32.dp,
+        bottomEnd = 32.dp,
     )
 
-    val backgroundBrush by palette.paletteBackgroundBrush()
+    val (backgroundBrush, contentColor) = palette.paletteBackgroundBrush().value
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -121,14 +165,14 @@ private fun SharedTransitionScope.DetailsHeader(
                         composeNavigator.navigateUp()
                     },
                     painter = painterResource(id = RR.drawable.ic_arrow),
-                    tint = NewsTheme.colors.white,
+                    tint = contentColor,
                     contentDescription = null,
                 )
 
                 Text(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = new.author,
-                    color = NewsTheme.colors.white,
+                    color = contentColor,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                 )
@@ -137,7 +181,7 @@ private fun SharedTransitionScope.DetailsHeader(
 
                 Text(
                     text = new.pubDate.formatToDatePattern(),
-                    color = NewsTheme.colors.white,
+                    color = contentColor,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -169,6 +213,25 @@ private fun SharedTransitionScope.DetailsHeader(
                     }
                 }
             )
+            Icon(
+                painter = painterResource(id = RR.drawable.baseline_share_24),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(top = 32.dp, end = 24.dp, bottom = 16.dp)
+                    .clickable { onShareClick() }
+            )
+
+            Icon(
+                painter = painterResource(id = RR.drawable.baseline_qr_code_24),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(top = 32.dp, start = 24.dp, bottom = 16.dp)
+                    .clickable { onQrShareClick() }
+            )
         }
 
         Column(modifier = Modifier.padding(16.dp)) {
@@ -176,5 +239,31 @@ private fun SharedTransitionScope.DetailsHeader(
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = new.leadParagraph)
         }
+    }
+}
+
+private fun createQRBitmap(data: String?): Bitmap? {
+    return try {
+        val result = QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, 640, 640)
+        val bitmap: Bitmap =
+            Bitmap.createBitmap(result.width, result.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+
+        val colors = listOf(Color.BLUE, Color.RED, Color.YELLOW)
+        val shapes = listOf(Paint.Style.FILL, Paint.Style.STROKE)
+
+        for (y in 0 until result.height) {
+            for (x in 0 until result.width) {
+                if (result[x, y]) {
+                    paint.color = colors[(x + y) % colors.size]
+                    paint.style = shapes[(x + y) % shapes.size]
+                    canvas.drawRect(Rect(x, y, x + 1, y + 1), paint)
+                }
+            }
+        }
+        bitmap
+    } catch (e: WriterException) {
+        Bitmap.createBitmap(324, 324, Bitmap.Config.ARGB_8888)
     }
 }

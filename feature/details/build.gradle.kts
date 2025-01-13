@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(projects.core.viewmodel)
+    implementation(libs.zxing.core)
     implementation(projects.utils)
     implementation(projects.core.database)
     implementation(projects.core.domain)
