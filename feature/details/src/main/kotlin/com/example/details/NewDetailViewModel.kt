@@ -28,6 +28,9 @@ class NewDetailViewModel(
     override suspend fun manageIntent(intent: UiIntent) {
         when (intent) {
             UiIntent.OnFavoritePressed -> handleFavoriteAction()
+            UiIntent.OnSharePressed -> setState{ copy(showShareDialog = true) }
+            UiIntent.CloseShareDialog -> setState { copy(showShareDialog = false) }
+            UiIntent.OnQrSharePressed -> setState { copy(showQrShareDialog = true) }
         }
     }
 
