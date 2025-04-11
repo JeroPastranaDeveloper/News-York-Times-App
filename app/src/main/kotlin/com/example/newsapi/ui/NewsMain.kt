@@ -8,7 +8,6 @@ import com.example.navigation.AppComposeNavigator
 import com.example.navigation.NewsScreen
 import com.example.newsapi.navigation.NewsNavHost
 
-
 @Composable
 fun NewsMain(composeNavigator: AppComposeNavigator<NewsScreen>) {
     NewsTheme {
