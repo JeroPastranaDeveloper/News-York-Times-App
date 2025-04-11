@@ -10,12 +10,14 @@ import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.InternalSerializationApi
 
 class DetailsRepositoryImpl(
     private val newClient: NewClient,
     private val newDao: NewDao
 ) : DetailsRepository {
 
+    @OptIn(InternalSerializationApi::class)
     @WorkerThread
     override fun fetchNewDetail(url: String, imageUrl: String): Flow<NewDetail> = flow {
         retryWithDelay {

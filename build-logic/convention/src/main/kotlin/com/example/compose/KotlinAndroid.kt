@@ -34,7 +34,7 @@ internal fun Project.configureKotlinAndroid(
         compilerOptions {
             // Treat all Kotlin warnings as errors (disabled by default)
             allWarningsAsErrors.set(
-                properties["warningsAsErrors"] as? Boolean ?: false
+                properties["warningsAsErrors"] as? Boolean == true
             )
 
             freeCompilerArgs.set(

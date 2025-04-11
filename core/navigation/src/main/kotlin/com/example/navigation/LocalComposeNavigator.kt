@@ -5,7 +5,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 
-public val LocalComposeNavigator: ProvidableCompositionLocal<AppComposeNavigator<NewsScreen>> =
+val LocalComposeNavigator: ProvidableCompositionLocal<AppComposeNavigator<NewsScreen>> =
     compositionLocalOf { error("No AppComposeNavigator provided!") }
 
 /**

@@ -9,7 +9,9 @@ import com.example.network.model.ApiMediaMetadata
 import com.example.network.model.ApiNew
 import com.example.network.model.ApiNewDetail
 import com.example.utils.orZero
+import kotlinx.serialization.InternalSerializationApi
 
+@OptIn(InternalSerializationApi::class)
 fun ApiNew.toNew(): New =
     New(
         title = title.orEmpty(),
@@ -19,6 +21,7 @@ fun ApiNew.toNew(): New =
         imageUrl = media?.toMedia()?.firstOrNull()?.getLargestImage().orEmpty()
     )
 
+@OptIn(InternalSerializationApi::class)
 fun ApiNewDetail.toNewDetail(imageUrl: String): NewDetail =
     NewDetail(
         snippet = this.snippet.orEmpty(),
@@ -41,12 +44,14 @@ fun ApiNewDetail.toNewDetail(imageUrl: String): NewDetail =
         documentType = this.documentType.orEmpty(),
     )
 
+@OptIn(InternalSerializationApi::class)
 fun ApiNewDetail.buildAuthor(): String =
     this.byline?.person
         ?.takeIf { it.isNotEmpty() }
         ?.let { "${it[0].firstName.orEmpty()} ${it[0].lastName.orEmpty()}" }
         .orEmpty()
 
+@OptIn(InternalSerializationApi::class)
 fun List<ApiMedia>.toMedia(): List<ArticleMedia> =
     this.map {
         ArticleMedia(
@@ -56,6 +61,7 @@ fun List<ApiMedia>.toMedia(): List<ArticleMedia> =
         )
     }
 
+@OptIn(InternalSerializationApi::class)
 fun List<ApiMediaMetadata>.toArticleMediaMetadata() =
     this.map {
         ArticleMediaMetadata(
